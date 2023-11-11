@@ -64,7 +64,7 @@ class Content extends CI_Controller {
 			else{
 
 			}
-           
+           da
 
 			$this->Mcontent->content_insert($mydata);
 			$this->session->set_flashdata('success', 'Thêm bài viết thành công');
