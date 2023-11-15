@@ -41,7 +41,7 @@ class Product extends CI_Controller {
       redirect('admin/E403/index','refresh');
     }
 		$d=getdate();
-		$today=$d['year']."/".$d['mon']."/".$d['mday']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
+		$today=$d['mday']."/".$d['mon']."/".$d['year']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
 		$this->load->library('form_validation');
 		$this->load->library('session');
 		$this->load->library('alias');
@@ -72,9 +72,9 @@ class Product extends CI_Controller {
 	         //thuc mục chứa file
 			$config['upload_path']   = './public/images/products/';
 	         //Định dạng file được phép tải
-			$config['allowed_types'] = 'jpg|png|gif';
+			$config['allowed_types'] = 'jpg|png|gif|jpeg|PNG|JPG|JPEG|GIF';
 	         //Dung lượng tối đa
-			$config['max_size']      = '500';
+			$config['max_size']      = '5097152';
 			$config['encrypt_name'] = TRUE;
 	         //Chiều rộng tối đa
 			$config['max_width']     = '1028';
@@ -94,7 +94,7 @@ class Product extends CI_Controller {
               	$_FILES['userfile']['name']     = $file['name'][$i];  //khai báo tên của file thứ i
               	$_FILES['userfile']['type']     = $file['type'][$i]; //khai báo kiểu của file thứ i
               	$_FILES['userfile']['tmp_name'] = $file['tmp_name'][$i]; //khai báo đường dẫn tạm của file thứ i
-          		$_FILES['userfile']['error']    = $file['error'][$i]; //khai báo lỗi của file thứ i
+          	  	$_FILES['userfile']['error']    = $file['error'][$i]; //khai báo lỗi của file thứ i
               	$_FILES['userfile']['size']     = $file['size'][$i]; //khai báo kích cỡ của file thứ i
 	              //load thư viện upload và cấu hình
 	              //thực hiện upload từng file
@@ -126,7 +126,7 @@ class Product extends CI_Controller {
       $giaban= $this->input->post('price_buy');
       $giagoc= $this->input->post('price_root');
       if($giaban>$giagoc){
-        $this->form_validation->set_message(__FUNCTION__,'Bạn Phải Nhập Giá Bán Nhỏ Hơn Hoặc Bằng Giá Gốc');
+        $this->form_validation->set_message(__FUNCTION__,'Bạn Phải Nhập Giá Bán Nhỏ Hơn Hoặc Bằng Giá Gốc ( Áp dụng giảm giá )');
         return FALSE;
       }else{
         return true;
@@ -174,12 +174,14 @@ class Product extends CI_Controller {
           }
 
           public function status($id){ 
-             $row1=$this->Mproduct->product_detail($id);
+           $d=getdate();
+           $today=$d['mday']."/".$d['mon']."/".$d['year']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
+           $row1=$this->Mproduct->product_detail($id);
            $row=$this->Mproduct->product_detail($id);
            $status=($row['status']==1)?0:1;
            $mydata= array('status' => $status,'modified_by'=>$this->session->userdata('id'),);
            $this->Mproduct->product_update($mydata, $id);
-           $this->session->set_flashdata('success', 'Cập Nhật Sản Phẩm '.$row1['name'].' Thành Công');
+           $this->session->set_flashdata('success', 'Cập Nhật Sản Phẩm '.$row1['name'].' Thành Công. Thời Gian: '.$today.'');
            redirect('admin/product/','refresh');
          }
 
@@ -197,6 +199,8 @@ class Product extends CI_Controller {
          }
 
          public function trash($id){
+          $d=getdate();
+          $today=$d['mday']."/".$d['mon']."/".$d['year']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
            $row = $this->Morderdetail->orderdetail_detail($id);
            $row1=$this->Mproduct->product_detail($id);
            if(count($row) > 0){
@@ -205,21 +209,24 @@ class Product extends CI_Controller {
           }else{
             $mydata= array('trash' => 0,'modified_by'=>$this->session->userdata('id'),);
             $this->Mproduct->product_update($mydata, $id);
-            $this->session->set_flashdata('success', 'Xóa Sản Phẩm '.$row1['name'].' Vào Thùng Rác Thành Công');
+            $this->session->set_flashdata('success', 'Xóa Sản Phẩm '.$row1['name'].' Vào Thùng Rác Thành Công. Thời Gian: '.$today.'');
             redirect('admin/product','refresh');
           }
         }
 
         public function restore($id){
-       
+          $d=getdate();
+          $today=$d['mday']."/".$d['mon']."/".$d['year']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
          $this->Mproduct->product_restore($id);
-         $this->session->set_flashdata('success', 'Khôi Phục Sản Phẩm Thành Công');
+         $row =  $this->db->where('id', $id)->get('db_product')->row_array();
+         $this->session->set_flashdata('success', 'Khôi Phục Sản Phẩm '.$row['name'].' Thành Công. Thời Gian: '.$today.'');
          redirect('admin/product/recyclebin','refresh');
        }
 
        public function delete($id){
-        $d=getdate();
-       
+   
+         $d=getdate();
+         $row1 =  $this->db->where('id', $id)->get('db_product')->row_array();
          $today=$d['mday']."/".$d['mon']."/".$d['year']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
          $this->load->helper('file');
          $row = $this->Mproduct->product_delete_detail($id) ;
@@ -230,7 +237,7 @@ class Product extends CI_Controller {
           // Handle the case when 'img' key is not set in $row
         }
          $this->Mproduct->product_delete($id);
-         $this->session->set_flashdata('success', 'Xóa Sản Phẩm Thành Công. Thời Gian: '.$today.'');
+         $this->session->set_flashdata('success', 'Xóa Sản Phẩm Thành Công '.$row1['name'].'. Thời Gian: '.$today.'');
          redirect('admin/product/recyclebin','refresh');
        }
 

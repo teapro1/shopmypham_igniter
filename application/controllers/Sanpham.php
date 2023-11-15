@@ -83,7 +83,7 @@ class Sanpham extends CI_Controller {
 
             // $result=$this->load->view('frontend/components/sanpham/index_order2',$this->data,true);
             // echo json_encode($result);
-            $html='<script>document.location.reload(true);</script>';
+            $html='<script> document.location.reload(true) </script>';
             echo json_encode($html);
             
         }else{
