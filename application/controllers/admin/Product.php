@@ -173,12 +173,13 @@ class Product extends CI_Controller {
             $this->load->view('backend/layout', $this->data);
           }
 
-          public function status($id){
+          public function status($id){ 
+             $row1=$this->Mproduct->product_detail($id);
            $row=$this->Mproduct->product_detail($id);
            $status=($row['status']==1)?0:1;
            $mydata= array('status' => $status,'modified_by'=>$this->session->userdata('id'),);
            $this->Mproduct->product_update($mydata, $id);
-           $this->session->set_flashdata('success', 'Cập Nhật Sản Phẩm Thành Công');
+           $this->session->set_flashdata('success', 'Cập Nhật Sản Phẩm '.$row1['name'].' Thành Công');
            redirect('admin/product/','refresh');
          }
 
@@ -197,18 +198,20 @@ class Product extends CI_Controller {
 
          public function trash($id){
            $row = $this->Morderdetail->orderdetail_detail($id);
+           $row1=$this->Mproduct->product_detail($id);
            if(count($row) > 0){
-            $this->session->set_flashdata('success', 'Đã Có Khách Hàng Đặt Mua, không Thể Xóa !');
+            $this->session->set_flashdata('success', 'Đã Có Khách Hàng Đặt Mua, Không Thể Xóa !');
             redirect('admin/product','refresh');
           }else{
             $mydata= array('trash' => 0,'modified_by'=>$this->session->userdata('id'),);
             $this->Mproduct->product_update($mydata, $id);
-            $this->session->set_flashdata('success', 'Xóa Sản Phẩm Vào Thùng Rác Thành Công');
+            $this->session->set_flashdata('success', 'Xóa Sản Phẩm '.$row1['name'].' Vào Thùng Rác Thành Công');
             redirect('admin/product','refresh');
           }
         }
 
         public function restore($id){
+       
          $this->Mproduct->product_restore($id);
          $this->session->set_flashdata('success', 'Khôi Phục Sản Phẩm Thành Công');
          redirect('admin/product/recyclebin','refresh');
@@ -216,9 +219,11 @@ class Product extends CI_Controller {
 
        public function delete($id){
         $d=getdate();
+       
          $today=$d['mday']."/".$d['mon']."/".$d['year']." ".$d['hours'].":".$d['minutes'].":".$d['seconds'];
          $this->load->helper('file');
          $row = $this->Mproduct->product_delete_detail($id) ;
+        
          if (isset($row['img'])) {
           delete_files(base_url("public/images/products" . $row['img']));
          } else {

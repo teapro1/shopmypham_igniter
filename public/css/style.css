@@ -220,7 +220,7 @@
         display: none !important;
     }
     #header .navbar-nav li a:first-child {
-        padding-left: 0 !important;
+        /* padding-left: 0 !important; */
     }
     .product-view-content {
         padding-left: 15px !important;
@@ -538,6 +538,7 @@
 }
 
 .nav>li>a:hover {
+    border-radius: 20px;
     /* position: relative;
     display: block;
     margin: auto;
@@ -843,7 +844,8 @@
     color: #fff;
     padding: 0 15px;
     font-weight: 400;
-    font-size: 17px;
+    font-size: 20px;
+    font-family: none;
 }
 
 .menu-right li a:hover {

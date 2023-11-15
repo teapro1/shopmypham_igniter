@@ -3,7 +3,7 @@
       <div class="banner-product">
     <div class="container">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <img class="img-fluid position-absolute" src="//theme.hstatic.net/200000551679/1001143291/14/top_banner.jpg?v=102" style="left:0; width: 100%;" alt="Banner top" width="1200" height="60">
+      <img class="img-fluid position-absolute" src="public/images/sp.png" style="left:0; width: 100%;" alt="Banner top" width="1200" height="60">
            
       </div>
     </div>
